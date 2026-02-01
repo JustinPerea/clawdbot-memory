@@ -15,7 +15,7 @@ A persistent memory system for Claude Code that gives Claude long-term memory ac
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/clawdbot-memory.git
+git clone https://github.com/JustinPerea/clawdbot-memory.git
 cd clawdbot-memory
 pnpm install
 ```
