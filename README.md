@@ -12,7 +12,13 @@ A persistent memory system for Claude Code that gives Claude long-term memory ac
 
 ## Quick Start
 
-### 1. Clone and install
+### Option A: Let Claude Set It Up
+
+Copy the prompt from [`SETUP_PROMPT.md`](./SETUP_PROMPT.md) and paste it into Claude Code in your project. Claude will integrate the memory system into your existing project.
+
+### Option B: Manual Setup
+
+#### 1. Clone and install
 
 ```bash
 git clone https://github.com/JustinPerea/clawdbot-memory.git
