@@ -1,8 +1,10 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env node
 
 /**
  * Session Start Hook
  * Injects memory context at the start of a Claude Code session
+ *
+ * Plain Node.js - no tsx required
  */
 
 import { readFile, readdir } from 'fs/promises';
@@ -10,7 +12,7 @@ import { join } from 'path';
 
 const PROJECT_ROOT = process.env.CLAUDE_PROJECT_ROOT || process.cwd();
 
-async function getRecentDailyLogs(days: number = 3): Promise<string[]> {
+async function getRecentDailyLogs(days = 3) {
   const memoryDir = join(PROJECT_ROOT, 'memory');
   try {
     const files = await readdir(memoryDir);
@@ -20,7 +22,7 @@ async function getRecentDailyLogs(days: number = 3): Promise<string[]> {
       .reverse()
       .slice(0, days);
 
-    const contents: string[] = [];
+    const contents = [];
     for (const file of mdFiles) {
       try {
         const content = await readFile(join(memoryDir, file), 'utf-8');
@@ -35,7 +37,7 @@ async function getRecentDailyLogs(days: number = 3): Promise<string[]> {
   }
 }
 
-async function getMemorySummary(file: string): Promise<string | null> {
+async function getMemorySummary(file) {
   try {
     const content = await readFile(join(PROJECT_ROOT, file), 'utf-8');
     const lines = content.split('\n').slice(0, 10).join('\n');
@@ -46,7 +48,7 @@ async function getMemorySummary(file: string): Promise<string | null> {
 }
 
 async function main() {
-  const contextParts: string[] = [];
+  const contextParts = [];
 
   // Get summaries from curated files
   const files = ['MEMORY.md', 'USER.md', 'SOUL.md'];
@@ -80,4 +82,4 @@ async function main() {
   }
 }
 
-main();
+main().catch(() => console.log(JSON.stringify({})));

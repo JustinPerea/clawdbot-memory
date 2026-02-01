@@ -14,7 +14,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx tsx .claude/hooks/session-start.ts"
+            "command": "node .claude/hooks/session-start.mjs"
           }
         ]
       }
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx tsx .claude/hooks/subagent-start.ts"
+            "command": "node .claude/hooks/subagent-start.mjs"
           }
         ]
       }
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx tsx .claude/hooks/pre-compact.ts"
+            "command": "node .claude/hooks/pre-compact.mjs"
           }
         ]
       },
@@ -44,7 +44,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx tsx .claude/hooks/pre-compact.ts"
+            "command": "node .claude/hooks/pre-compact.mjs"
           }
         ]
       }
@@ -54,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx tsx .claude/hooks/session-end.ts"
+            "command": "node .claude/hooks/session-end.mjs"
           }
         ]
       }

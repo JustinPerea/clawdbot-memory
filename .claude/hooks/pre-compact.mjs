@@ -1,10 +1,10 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env node
 
 /**
  * Pre-Compact Hook (Memory Flush)
  * Prompts Claude to save important information before context compaction.
  *
- * This is prompt-driven - we tell Claude to save memories, not auto-extract.
+ * Plain Node.js - no tsx required
  */
 
 const MEMORY_FLUSH_PROMPT = `
@@ -27,11 +27,6 @@ If there's nothing important to save, reply with just "NO_SAVE".
 Otherwise, save the relevant information now.
 `;
 
-async function main() {
-  // Output the prompt for Claude to act on
-  console.log(JSON.stringify({
-    additionalContext: MEMORY_FLUSH_PROMPT
-  }));
-}
-
-main();
+console.log(JSON.stringify({
+  additionalContext: MEMORY_FLUSH_PROMPT
+}));

@@ -1,29 +1,23 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env node
 
 /**
  * Subagent Start Hook
  *
  * NOTE: As of Jan 2026, Claude Code's SubagentStart hook does NOT support
- * additionalContext injection (only SessionStart, PreToolUse, PostToolUse,
- * UserPromptSubmit, and Setup support this). This hook currently only
- * works for logging/monitoring purposes.
+ * additionalContext injection. This hook currently only works for
+ * logging/monitoring purposes.
  *
- * Subagents should use MCP tools (memory_search, memory_get) directly
- * to access memory context.
+ * Subagents should use MCP tools (memory_search, memory_get) directly.
  *
- * This file is kept ready for when SubagentStart adds additionalContext support.
+ * Plain Node.js - no tsx required
  */
 
-import { readFile, appendFile } from 'fs/promises';
+import { readFile } from 'fs/promises';
 import { join } from 'path';
-
-// Log to file to verify hook is triggered
-const logFile = '/tmp/subagent-hook-debug.log';
-await appendFile(logFile, `[${new Date().toISOString()}] SubagentStart hook triggered\n`);
 
 const PROJECT_ROOT = process.env.CLAUDE_PROJECT_ROOT || process.cwd();
 
-async function getMemoryContent(file: string, maxLines: number = 20): Promise<string | null> {
+async function getMemoryContent(file, maxLines = 20) {
   try {
     const content = await readFile(join(PROJECT_ROOT, file), 'utf-8');
     const lines = content.split('\n').slice(0, maxLines).join('\n');
@@ -34,9 +28,8 @@ async function getMemoryContent(file: string, maxLines: number = 20): Promise<st
 }
 
 async function main() {
-  const contextParts: string[] = [];
+  const contextParts = [];
 
-  // Get key memory files for subagent context
   const files = [
     { name: 'USER.md', desc: 'User preferences' },
     { name: 'MEMORY.md', desc: 'Project knowledge' },
@@ -63,7 +56,6 @@ async function main() {
       'Report important findings back to the main session.',
     ].join('\n');
 
-    // Use hookSpecificOutput format like SessionStart
     console.log(JSON.stringify({
       hookSpecificOutput: {
         hookEventName: "SubagentStart",
@@ -75,4 +67,4 @@ async function main() {
   }
 }
 
-main();
+main().catch(() => console.log(JSON.stringify({})));
