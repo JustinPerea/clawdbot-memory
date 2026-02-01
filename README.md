@@ -2,7 +2,11 @@
 
 A persistent memory system for Claude Code that gives Claude long-term memory across sessions.
 
-**[View Full Documentation & Architecture Diagram](./docs/index.html)**
+**[View Full Documentation](./docs/index.html)**
+
+## Architecture
+
+![Clawdbot Memory Architecture](./docs/architecture.svg)
 
 ## Features
 
