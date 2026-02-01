@@ -29,26 +29,6 @@
         ]
       }
     ],
-    "PreCompact": [
-      {
-        "matcher": "auto",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/pre-compact.mjs"
-          }
-        ]
-      },
-      {
-        "matcher": "manual",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/pre-compact.mjs"
-          }
-        ]
-      }
-    ],
     "SessionEnd": [
       {
         "hooks": [
