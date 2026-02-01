@@ -1,73 +1,84 @@
 # Setup Prompt
 
-Copy everything below and paste it to Claude Code in your project directory.
+Copy everything below the line and paste it to Claude Code in your project directory.
 
 ---
 
-## Prompt
-
-I want to add persistent memory to this project using the clawdbot-memory system. Please set it up for me.
+I want to add persistent memory to this project using the clawdbot-memory system.
 
 **Repository:** https://github.com/JustinPerea/clawdbot-memory
 
-### What to do:
+## Step 1: Investigate my environment first
 
-1. **Copy the memory system files** from the repo into this project:
-   - `src/` directory (MCP server and indexer)
-   - `.mcp.json` (MCP configuration)
-   - `.claude/hooks/` (session lifecycle hooks)
-   - `.claude/settings.template.json`
-   - `CLAUDE.md`, `MEMORY.md`, `USER.md`, `SOUL.md`, `AGENTS.md`, `TOOLS.md`
-   - `tsconfig.json`
-   - Create empty `memory/` directory for daily logs
+Before doing anything, check and report:
 
-2. **Merge dependencies** into my existing `package.json` (or create one if needed):
-   ```json
-   {
-     "dependencies": {
-       "@modelcontextprotocol/sdk": "^1.25.3",
-       "better-sqlite3": "^12.6.2",
-       "sqlite-vec": "^0.1.7-alpha.2",
-       "tiktoken": "^1.0.22",
-       "zod": "^4.3.6"
-     },
-     "devDependencies": {
-       "@types/better-sqlite3": "^7.6.13",
-       "@types/node": "^25.1.0",
-       "tsx": "^4.21.0",
-       "typescript": "^5.9.3"
-     },
-     "scripts": {
-       "memory:build": "tsc -p tsconfig.memory.json",
-       "memory:index": "tsx src/memory/indexer/cli.ts",
-       "memory:dev": "tsx watch src/memory/mcp-server/index.ts"
-     }
-   }
+1. **Operating system** - Are we on macOS, Linux, or Windows?
+
+2. **Package manager** - Do I have a `package.json`? What lockfile exists (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`)? Use whatever package manager I'm already using.
+
+3. **Existing MCP configuration** - Check for:
+   - `.mcp.json` in this project directory
+   - `~/.claude.json` or `~/.claude/` for user-level MCP config
+   - Any existing MCP servers I'm using that we shouldn't break
+
+4. **Existing Claude Code settings** - Check for:
+   - `.claude/settings.json` or `.claude/settings.local.json`
+   - Existing hooks or permissions we should preserve
+
+5. **Project structure** - Where does source code live? (`src/`, `lib/`, root, monorepo?)
+
+6. **Ollama availability** - Run `ollama list` to check if Ollama is installed and if `nomic-embed-text` model is available
+
+7. **Node.js version** - Run `node --version` to confirm 18+
+
+Report your findings and ask me to confirm before proceeding.
+
+## Step 2: Set up the memory system
+
+After I confirm, proceed with setup:
+
+1. **Clone/fetch the memory system source** from the repo
+
+2. **Place files appropriately** for my project structure:
+   - Memory system source → `src/memory/` (or appropriate location)
+   - Memory markdown files → project root (`MEMORY.md`, `USER.md`, etc.)
+   - MCP config → merge with existing `.mcp.json` or create new
+   - Claude settings → merge with existing `.claude/settings.local.json`
+   - Hooks → `.claude/hooks/`
+
+3. **Configure MCP server path** - The `.mcp.json` must use the correct path to the MCP server for my system. Use relative paths from project root.
+
+4. **Merge dependencies** into my `package.json` (don't overwrite, merge):
+   ```
+   @modelcontextprotocol/sdk, better-sqlite3, sqlite-vec, tiktoken, zod
+   ```
+   Add scripts: `memory:build`, `memory:index`, `memory:dev`
+
+5. **Set up .gitignore** - Add:
+   ```
+   .claude/settings.local.json
+   memory/*.md
+   *.db
    ```
 
-3. **Set up settings**:
-   - Copy `.claude/settings.template.json` to `.claude/settings.local.json`
-   - Add `.claude/settings.local.json` to `.gitignore`
+6. **Customize memory files**:
+   - `USER.md` - Add my name and any preferences you've learned about me
+   - `MEMORY.md` - Add any project context from our conversation history
+   - `CLAUDE.md` - Merge with any existing project instructions
 
-4. **Customize the memory files** for this project:
-   - Update `USER.md` with my name and any preferences you've learned
-   - Update `MEMORY.md` with any project context we've discussed
-   - Update `CLAUDE.md` if there are project-specific instructions
+## Step 3: Build and verify
 
-5. **Install and build**:
-   ```bash
-   pnpm install
-   pnpm run memory:build
-   pnpm run memory:index
-   ```
+1. Install dependencies using my package manager
+2. Build the TypeScript: `<pkg-manager> run memory:build`
+3. Check if Ollama is running, start if needed
+4. Index memory files: `<pkg-manager> run memory:index`
+5. Tell me to restart Claude Code
+6. After restart, test by running `memory_search` with a query
 
-6. **Verify it works** by restarting Claude Code and testing `memory_search`
+## Important notes
 
-### Requirements:
-- Ollama must be installed with `nomic-embed-text` model (`ollama pull nomic-embed-text`)
-- Node.js 18+ and pnpm
-
-### Notes:
-- Don't overwrite my existing project files
-- Put memory system source files in `src/memory/` to keep them separate
-- Adapt paths in `.mcp.json` and hooks if needed for my project structure
+- **Don't break existing MCP servers** - Merge config, don't replace
+- **Don't overwrite my files** - Merge dependencies and settings
+- **Use my package manager** - Don't assume pnpm
+- **Handle Windows paths** - Use appropriate path separators
+- **If Ollama isn't installed** - Tell me how to install it for my OS before proceeding
