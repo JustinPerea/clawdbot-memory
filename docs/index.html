@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clawdbot Memory System</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --bg-code: #0d1117;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* Header */
+    .hero {
+      background: var(--gradient);
+      padding: 80px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      opacity: 0.95;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      margin-top: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Sections */
+    section {
+      padding: 80px 0;
+    }
+
+    section:nth-child(even) {
+      background: var(--bg-card);
+    }
+
+    h2 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 32px 0 16px;
+      color: var(--text);
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      color: var(--secondary);
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .section-intro {
+      font-size: 1.125rem;
+      max-width: 700px;
+      margin-bottom: 48px;
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .card h4 {
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+
+    .card p {
+      font-size: 0.9375rem;
+      margin: 0;
+    }
+
+    /* Code blocks */
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    .inline-code {
+      background: var(--bg-code);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      color: var(--secondary);
+    }
+
+    /* Architecture diagram */
+    .architecture {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 32px 0;
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .arch-box {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 28px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .arch-box.primary {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .arch-box.secondary {
+      border-color: var(--secondary);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .arch-box.accent {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+    }
+
+    .arch-box span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .arch-arrow {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+    }
+
+    /* File tree */
+    .file-tree {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+    }
+
+    .file-tree-item {
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-tree-item.indent-1 { padding-left: 20px; }
+    .file-tree-item.indent-2 { padding-left: 40px; }
+    .file-tree-item.indent-3 { padding-left: 60px; }
+
+    .file-icon { opacity: 0.6; }
+    .folder-icon { color: var(--accent); }
+    .file-md { color: var(--primary); }
+    .file-ts { color: var(--secondary); }
+    .file-json { color: #f59e0b; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg-code);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      color: var(--text-muted);
+    }
+
+    td:first-child {
+      color: var(--secondary);
+      font-family: monospace;
+    }
+
+    /* Flow diagram */
+    .flow-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .flow-number {
+      width: 36px;
+      height: 36px;
+      background: var(--gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .flow-content {
+      flex: 1;
+      padding-top: 6px;
+    }
+
+    .flow-content h5 {
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .flow-content p {
+      font-size: 0.9375rem;
+      margin: 0;
+    }
+
+    /* Highlight box */
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .highlight-box h4 {
+      color: var(--primary);
+      margin-top: 0;
+    }
+
+    /* Two column layout */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .arch-flow {
+        flex-direction: column;
+      }
+
+      .arch-arrow {
+        transform: rotate(90deg);
+      }
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-code);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate {
+      animation: fadeInUp 0.6s ease-out;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-content animate">
+      <h1>Clawdbot Memory System</h1>
+      <p>Persistent, searchable memory for Claude Code using semantic search and local embeddings</p>
+      <div class="badge">Built with SQLite + Ollama + MCP</div>
+    </div>
+  </header>
+
+  <!-- What is it -->
+  <section>
+    <div class="container">
+      <h2>What is this?</h2>
+      <p class="section-intro">
+        A memory system that gives Claude Code the ability to remember information across sessions.
+        It stores facts, preferences, and context in markdown files, indexes them with semantic search,
+        and automatically injects relevant context at the start of each session.
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🧠</div>
+          <h4>Persistent Memory</h4>
+          <p>Information saved in one session is available in all future sessions, surviving context resets and compactions.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔍</div>
+          <h4>Semantic Search</h4>
+          <p>Find relevant memories using natural language queries, powered by local Ollama embeddings.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📁</div>
+          <h4>File-Based Storage</h4>
+          <p>All memories are stored in readable markdown files you can edit, version control, and backup.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔒</div>
+          <h4>Fully Local</h4>
+          <p>Everything runs on your machine. No cloud services, no data leaving your computer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section>
+    <div class="container">
+      <h2>How It Works</h2>
+      <p class="section-intro">
+        The system has three main components: memory files for storage, an MCP server for search tools,
+        and hooks for automatic context injection.
+      </p>
+
+      <div class="architecture">
+        <div class="arch-flow">
+          <div class="arch-box primary">
+            <strong>Claude Code</strong>
+            <span>CLI Session</span>
+          </div>
+          <div class="arch-arrow">⟷</div>
+          <div class="arch-box secondary">
+            <strong>MCP Server</strong>
+            <span>Memory Tools</span>
+          </div>
+          <div class="arch-arrow">⟷</div>
+          <div class="arch-box accent">
+            <strong>SQLite</strong>
+            <span>FTS5 + Vectors</span>
+          </div>
+          <div class="arch-arrow">⟷</div>
+          <div class="arch-box">
+            <strong>Ollama</strong>
+            <span>Embeddings</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <h3>Data Flow</h3>
+          <div class="flow-container">
+            <div class="flow-step">
+              <div class="flow-number">1</div>
+              <div class="flow-content">
+                <h5>Session Starts</h5>
+                <p>The SessionStart hook runs, injecting memory context from MEMORY.md, USER.md, and SOUL.md.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-number">2</div>
+              <div class="flow-content">
+                <h5>Search & Retrieve</h5>
+                <p>Claude uses <code class="inline-code">memory_search</code> to find relevant context, then <code class="inline-code">memory_get</code> to read details.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-number">3</div>
+              <div class="flow-content">
+                <h5>Save New Facts</h5>
+                <p>Important information is written to memory files using standard edit/write operations.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-number">4</div>
+              <div class="flow-content">
+                <h5>Session Ends</h5>
+                <p>The SessionEnd hook re-indexes all memory files, making new content searchable.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3>Search Technology</h3>
+          <div class="highlight-box">
+            <h4>Hybrid Search with RRF</h4>
+            <p>Combines two search methods for best results:</p>
+            <ul style="color: var(--text-muted); margin-left: 20px;">
+              <li><strong>Vector Search (70%)</strong> - Semantic similarity using embeddings</li>
+              <li><strong>FTS5 Search (30%)</strong> - Keyword matching with BM25</li>
+            </ul>
+            <p style="margin-top: 12px; margin-bottom: 0;">
+              Results are merged using Reciprocal Rank Fusion (RRF) for optimal relevance.
+            </p>
+          </div>
+
+          <h4>Embeddings</h4>
+          <p>Uses Ollama with the <code class="inline-code">nomic-embed-text</code> model (768 dimensions) running locally for privacy and speed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent Orchestration Diagram -->
+  <section>
+    <div class="container">
+      <h2>Agent Orchestration & Memory Flow</h2>
+      <p class="section-intro">
+        This diagram shows how Claude orchestrates subagents and how memory flows through the system.
+        CLAUDE.md is automatically injected by Claude Code, while memory context is injected via hooks.
+      </p>
+
+      <div style="background: var(--bg-code); border-radius: 12px; padding: 40px 20px; margin: 32px 0; overflow-x: auto;">
+        <svg viewBox="0 0 1000 700" style="width: 100%; max-width: 1000px; margin: 0 auto; display: block;">
+          <!-- Background grid pattern -->
+          <defs>
+            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#334155" stroke-width="0.5" opacity="0.3"/>
+            </pattern>
+            <!-- Gradients -->
+            <linearGradient id="claudeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#6366f1"/>
+              <stop offset="100%" style="stop-color:#8b5cf6"/>
+            </linearGradient>
+            <linearGradient id="agentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#3b82f6"/>
+              <stop offset="100%" style="stop-color:#06b6d4"/>
+            </linearGradient>
+            <linearGradient id="mcpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#10b981"/>
+              <stop offset="100%" style="stop-color:#34d399"/>
+            </linearGradient>
+            <linearGradient id="fileGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#f59e0b"/>
+              <stop offset="100%" style="stop-color:#fbbf24"/>
+            </linearGradient>
+            <linearGradient id="hookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ec4899"/>
+              <stop offset="100%" style="stop-color:#f472b6"/>
+            </linearGradient>
+            <!-- Arrow marker -->
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+            </marker>
+            <marker id="arrowheadGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+            </marker>
+            <marker id="arrowheadPink" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899"/>
+            </marker>
+          </defs>
+          <rect width="1000" height="700" fill="url(#grid)"/>
+
+          <!-- Title Labels -->
+          <text x="500" y="30" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">SESSION LIFECYCLE</text>
+
+          <!-- Phase Labels -->
+          <text x="120" y="60" text-anchor="middle" fill="#94a3b8" font-size="11">STARTUP</text>
+          <text x="400" y="60" text-anchor="middle" fill="#94a3b8" font-size="11">WORKING</text>
+          <text x="850" y="60" text-anchor="middle" fill="#94a3b8" font-size="11">SHUTDOWN</text>
+
+          <!-- ==================== STARTUP PHASE ==================== -->
+
+          <!-- CLAUDE.md Auto-Inject Box -->
+          <rect x="30" y="80" width="180" height="60" rx="8" fill="url(#hookGrad)" opacity="0.9"/>
+          <text x="120" y="105" text-anchor="middle" fill="white" font-size="12" font-weight="600">CLAUDE.md</text>
+          <text x="120" y="125" text-anchor="middle" fill="white" font-size="10" opacity="0.9">Auto-injected by Claude Code</text>
+
+          <!-- SessionStart Hook -->
+          <rect x="30" y="160" width="180" height="60" rx="8" fill="url(#hookGrad)" opacity="0.9"/>
+          <text x="120" y="185" text-anchor="middle" fill="white" font-size="12" font-weight="600">SessionStart Hook</text>
+          <text x="120" y="205" text-anchor="middle" fill="white" font-size="10" opacity="0.9">Injects memory context</text>
+
+          <!-- Arrow from hooks to Main Claude -->
+          <path d="M 210 110 Q 250 110 250 180 Q 250 250 290 250" stroke="#ec4899" stroke-width="2" fill="none" marker-end="url(#arrowheadPink)"/>
+          <path d="M 210 190 Q 250 190 250 220 Q 250 250 290 250" stroke="#ec4899" stroke-width="2" fill="none" marker-end="url(#arrowheadPink)"/>
+
+          <!-- ==================== MAIN CLAUDE SESSION ==================== -->
+
+          <!-- Main Claude Box -->
+          <rect x="290" y="200" width="200" height="100" rx="12" fill="url(#claudeGrad)" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))"/>
+          <text x="390" y="235" text-anchor="middle" fill="white" font-size="14" font-weight="700">Claude Code</text>
+          <text x="390" y="255" text-anchor="middle" fill="white" font-size="11" opacity="0.9">Main Session</text>
+          <text x="390" y="280" text-anchor="middle" fill="white" font-size="10" opacity="0.7">Has: CLAUDE.md + Memory Context</text>
+
+          <!-- Task Tool Label -->
+          <text x="390" y="330" text-anchor="middle" fill="#94a3b8" font-size="10">Task tool spawns agents ↓</text>
+
+          <!-- ==================== SUBAGENTS ==================== -->
+
+          <!-- Subagent boxes -->
+          <rect x="230" y="350" width="100" height="70" rx="8" fill="url(#agentGrad)" opacity="0.85"/>
+          <text x="280" y="380" text-anchor="middle" fill="white" font-size="11" font-weight="600">Explore</text>
+          <text x="280" y="398" text-anchor="middle" fill="white" font-size="9" opacity="0.8">Agent</text>
+
+          <rect x="350" y="350" width="100" height="70" rx="8" fill="url(#agentGrad)" opacity="0.85"/>
+          <text x="400" y="380" text-anchor="middle" fill="white" font-size="11" font-weight="600">Plan</text>
+          <text x="400" y="398" text-anchor="middle" fill="white" font-size="9" opacity="0.8">Agent</text>
+
+          <rect x="470" y="350" width="100" height="70" rx="8" fill="url(#agentGrad)" opacity="0.85"/>
+          <text x="520" y="380" text-anchor="middle" fill="white" font-size="11" font-weight="600">Bash</text>
+          <text x="520" y="398" text-anchor="middle" fill="white" font-size="9" opacity="0.8">Agent</text>
+
+          <!-- Arrows from Main to Subagents -->
+          <line x1="340" y1="300" x2="280" y2="350" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="390" y1="300" x2="400" y2="350" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="440" y1="300" x2="520" y2="350" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- SubagentStart note -->
+          <rect x="230" y="440" width="340" height="35" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4"/>
+          <text x="400" y="462" text-anchor="middle" fill="#f59e0b" font-size="10">⚠ SubagentStart hook fires but no auto-injection yet</text>
+
+          <!-- ==================== MCP SERVER ==================== -->
+
+          <!-- MCP Server Box -->
+          <rect x="630" y="300" width="160" height="120" rx="10" fill="url(#mcpGrad)" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))"/>
+          <text x="710" y="330" text-anchor="middle" fill="white" font-size="13" font-weight="700">MCP Server</text>
+          <text x="710" y="355" text-anchor="middle" fill="white" font-size="10" opacity="0.9">memory_search</text>
+          <text x="710" y="372" text-anchor="middle" fill="white" font-size="10" opacity="0.9">memory_get</text>
+          <text x="710" y="389" text-anchor="middle" fill="white" font-size="10" opacity="0.9">memory_list</text>
+          <text x="710" y="410" text-anchor="middle" fill="white" font-size="9" opacity="0.7">stdio transport</text>
+
+          <!-- Arrows: Main Claude <-> MCP -->
+          <path d="M 490 250 L 630 350" stroke="#10b981" stroke-width="2" marker-end="url(#arrowheadGreen)"/>
+          <text x="575" y="285" fill="#10b981" font-size="9" transform="rotate(-25 575 285)">search/get</text>
+
+          <!-- Arrows: Subagents -> MCP (they use MCP tools) -->
+          <path d="M 520 420 Q 580 450 630 400" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#arrowheadGreen)"/>
+          <text x="590" y="450" fill="#10b981" font-size="9">explicit calls</text>
+
+          <!-- ==================== MEMORY FILES ==================== -->
+
+          <!-- Memory Files Group -->
+          <rect x="630" y="80" width="160" height="180" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+          <text x="710" y="105" text-anchor="middle" fill="#f59e0b" font-size="12" font-weight="600">Memory Files</text>
+
+          <!-- File items -->
+          <rect x="645" y="118" width="130" height="22" rx="4" fill="#0d1117"/>
+          <text x="655" y="134" fill="#e2e8f0" font-size="10">📄 MEMORY.md</text>
+
+          <rect x="645" y="145" width="130" height="22" rx="4" fill="#0d1117"/>
+          <text x="655" y="161" fill="#e2e8f0" font-size="10">📄 USER.md</text>
+
+          <rect x="645" y="172" width="130" height="22" rx="4" fill="#0d1117"/>
+          <text x="655" y="188" fill="#e2e8f0" font-size="10">📄 SOUL.md</text>
+
+          <rect x="645" y="199" width="130" height="22" rx="4" fill="#0d1117"/>
+          <text x="655" y="215" fill="#e2e8f0" font-size="10">📄 AGENTS.md</text>
+
+          <rect x="645" y="226" width="130" height="22" rx="4" fill="#0d1117"/>
+          <text x="655" y="242" fill="#e2e8f0" font-size="10">📁 memory/*.md</text>
+
+          <!-- Arrow: MCP reads files -->
+          <path d="M 710 300 L 710 260" stroke="#10b981" stroke-width="2" marker-end="url(#arrowheadGreen)"/>
+          <text x="720" y="285" fill="#10b981" font-size="9">reads</text>
+
+          <!-- Arrow: Claude writes to files -->
+          <path d="M 490 220 Q 550 180 630 180" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="none"/>
+          <text x="540" y="165" fill="#f59e0b" font-size="9">writes (Edit/Write)</text>
+
+          <!-- ==================== SQLite + Ollama ==================== -->
+
+          <!-- SQLite -->
+          <rect x="630" y="480" width="75" height="50" rx="6" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="667" y="505" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">SQLite</text>
+          <text x="667" y="520" text-anchor="middle" fill="#a5b4fc" font-size="8">FTS5+Vec</text>
+
+          <!-- Ollama -->
+          <rect x="715" y="480" width="75" height="50" rx="6" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="752" y="505" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Ollama</text>
+          <text x="752" y="520" text-anchor="middle" fill="#a5b4fc" font-size="8">embeddings</text>
+
+          <!-- Arrows: MCP <-> Storage -->
+          <line x1="680" y1="420" x2="680" y2="480" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="740" y1="420" x2="752" y2="480" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- ==================== SHUTDOWN PHASE ==================== -->
+
+          <!-- PreCompact Hook -->
+          <rect x="820" y="200" width="150" height="60" rx="8" fill="url(#hookGrad)" opacity="0.9"/>
+          <text x="895" y="225" text-anchor="middle" fill="white" font-size="11" font-weight="600">PreCompact Hook</text>
+          <text x="895" y="245" text-anchor="middle" fill="white" font-size="9" opacity="0.9">Prompts saving info</text>
+
+          <!-- SessionEnd Hook -->
+          <rect x="820" y="280" width="150" height="60" rx="8" fill="url(#hookGrad)" opacity="0.9"/>
+          <text x="895" y="305" text-anchor="middle" fill="white" font-size="11" font-weight="600">SessionEnd Hook</text>
+          <text x="895" y="325" text-anchor="middle" fill="white" font-size="9" opacity="0.9">Re-indexes all files</text>
+
+          <!-- Indexer -->
+          <rect x="820" y="360" width="150" height="50" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5"/>
+          <text x="895" y="385" text-anchor="middle" fill="#c4b5fd" font-size="11" font-weight="600">Indexer Pipeline</text>
+          <text x="895" y="400" text-anchor="middle" fill="#c4b5fd" font-size="9">Chunks → Embeds → DB</text>
+
+          <!-- Arrows for shutdown flow -->
+          <line x1="895" y1="340" x2="895" y2="360" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrowheadPink)"/>
+          <path d="M 895 410 Q 895 450 752 480" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path d="M 895 410 Q 860 450 667 480" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- ==================== LEGEND ==================== -->
+
+          <rect x="30" y="560" width="940" height="120" rx="8" fill="#1e293b" opacity="0.7"/>
+          <text x="500" y="585" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">LEGEND</text>
+
+          <!-- Legend items row 1 -->
+          <rect x="60" y="600" width="16" height="16" rx="3" fill="url(#claudeGrad)"/>
+          <text x="85" y="613" fill="#e2e8f0" font-size="10">Main Session</text>
+
+          <rect x="200" y="600" width="16" height="16" rx="3" fill="url(#agentGrad)"/>
+          <text x="225" y="613" fill="#e2e8f0" font-size="10">Subagents</text>
+
+          <rect x="340" y="600" width="16" height="16" rx="3" fill="url(#hookGrad)"/>
+          <text x="365" y="613" fill="#e2e8f0" font-size="10">Hooks (auto-triggered)</text>
+
+          <rect x="520" y="600" width="16" height="16" rx="3" fill="url(#mcpGrad)"/>
+          <text x="545" y="613" fill="#e2e8f0" font-size="10">MCP Server</text>
+
+          <rect x="680" y="600" width="16" height="16" rx="3" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+          <text x="705" y="613" fill="#e2e8f0" font-size="10">Memory Files</text>
+
+          <!-- Legend items row 2 -->
+          <line x1="60" y1="640" x2="90" y2="640" stroke="#ec4899" stroke-width="2"/>
+          <text x="100" y="644" fill="#e2e8f0" font-size="10">Context injection</text>
+
+          <line x1="230" y1="640" x2="260" y2="640" stroke="#10b981" stroke-width="2"/>
+          <text x="270" y="644" fill="#e2e8f0" font-size="10">Memory read (MCP)</text>
+
+          <line x1="400" y1="640" x2="430" y2="640" stroke="#f59e0b" stroke-width="2"/>
+          <text x="440" y="644" fill="#e2e8f0" font-size="10">Memory write (Edit/Write)</text>
+
+          <line x1="600" y1="640" x2="630" y2="640" stroke="#10b981" stroke-width="2" stroke-dasharray="4"/>
+          <text x="640" y="644" fill="#e2e8f0" font-size="10">Explicit tool call</text>
+
+          <line x1="780" y1="640" x2="810" y2="640" stroke="#94a3b8" stroke-width="1.5"/>
+          <text x="820" y="644" fill="#e2e8f0" font-size="10">Data flow</text>
+        </svg>
+      </div>
+
+      <div class="two-col" style="margin-top: 40px;">
+        <div>
+          <h3>Key Points</h3>
+          <ul style="color: var(--text-muted); line-height: 2;">
+            <li><strong>CLAUDE.md</strong> is auto-injected by Claude Code on every session start/resume/compact</li>
+            <li><strong>SessionStart Hook</strong> adds memory context (USER.md, MEMORY.md, SOUL.md summaries)</li>
+            <li><strong>Subagents</strong> inherit MCP tools but must call <code class="inline-code">memory_search</code> explicitly</li>
+            <li><strong>PreCompact Hook</strong> prompts Claude to save important info before context reduction</li>
+            <li><strong>Memory writes</strong> happen via standard Edit/Write tools to markdown files</li>
+          </ul>
+        </div>
+        <div>
+          <h3>File Update Behavior</h3>
+          <table style="font-size: 0.9rem;">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Updated By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CLAUDE.md</td>
+                <td>Manual only (instructions file)</td>
+              </tr>
+              <tr>
+                <td>AGENTS.md</td>
+                <td>Manual only (behavior patterns)</td>
+              </tr>
+              <tr>
+                <td>USER.md</td>
+                <td>Claude writes when learning preferences</td>
+              </tr>
+              <tr>
+                <td>MEMORY.md</td>
+                <td>Claude writes important decisions/facts</td>
+              </tr>
+              <tr>
+                <td>memory/*.md</td>
+                <td>Claude writes session notes daily</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Memory Files -->
+  <section>
+    <div class="container">
+      <h2>Memory Files</h2>
+      <p class="section-intro">
+        Memory is organized into purpose-specific markdown files. Each file type serves a different role in the system.
+      </p>
+
+      <div class="two-col">
+        <div class="file-tree">
+          <div class="file-tree-item">
+            <span class="folder-icon">📁</span> clawdbot-memory/
+          </div>
+          <div class="file-tree-item indent-1">
+            <span class="file-icon file-md">📄</span> MEMORY.md
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: auto;">Long-term facts</span>
+          </div>
+          <div class="file-tree-item indent-1">
+            <span class="file-icon file-md">📄</span> USER.md
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: auto;">User preferences</span>
+          </div>
+          <div class="file-tree-item indent-1">
+            <span class="file-icon file-md">📄</span> SOUL.md
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: auto;">Personality/tone</span>
+          </div>
+          <div class="file-tree-item indent-1">
+            <span class="file-icon file-md">📄</span> AGENTS.md
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: auto;">Behavior rules</span>
+          </div>
+          <div class="file-tree-item indent-1">
+            <span class="file-icon file-md">📄</span> TOOLS.md
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: auto;">Tool guidance</span>
+          </div>
+          <div class="file-tree-item indent-1">
+            <span class="folder-icon">📁</span> memory/
+          </div>
+          <div class="file-tree-item indent-2">
+            <span class="file-icon file-md">📄</span> 2024-01-15.md
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: auto;">Daily log</span>
+          </div>
+          <div class="file-tree-item indent-2">
+            <span class="file-icon file-md">📄</span> 2024-01-16.md
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: auto;">Daily log</span>
+          </div>
+        </div>
+
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MEMORY.md</td>
+                <td>Long-term curated knowledge, project decisions, important facts</td>
+              </tr>
+              <tr>
+                <td>USER.md</td>
+                <td>User preferences, coding style, tool choices, communication style</td>
+              </tr>
+              <tr>
+                <td>SOUL.md</td>
+                <td>Claude's personality, tone, and interaction boundaries for this project</td>
+              </tr>
+              <tr>
+                <td>AGENTS.md</td>
+                <td>Behavior instructions for different contexts and task patterns</td>
+              </tr>
+              <tr>
+                <td>TOOLS.md</td>
+                <td>Guidance for using tools effectively, including memory tools</td>
+              </tr>
+              <tr>
+                <td>memory/*.md</td>
+                <td>Daily session logs, temporary notes, work in progress</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MCP Tools -->
+  <section>
+    <div class="container">
+      <h2>MCP Tools</h2>
+      <p class="section-intro">
+        Three tools are exposed via the Model Context Protocol, allowing Claude to search and retrieve memories.
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4 style="color: var(--secondary);">memory_search</h4>
+          <p>Semantic search across all memory files using hybrid vector + keyword search.</p>
+          <pre><code>{
+  "query": "testing framework preferences",
+  "maxResults": 6,
+  "minScore": 0.35
+}</code></pre>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--secondary);">memory_get</h4>
+          <p>Read specific lines from a memory file. Use after search to get full context.</p>
+          <pre><code>{
+  "path": "USER.md",
+  "from": 10,
+  "lines": 20
+}</code></pre>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--secondary);">memory_list</h4>
+          <p>List all available memory files with their sizes and types.</p>
+          <pre><code>{
+  "include_daily": true
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hooks -->
+  <section>
+    <div class="container">
+      <h2>Hooks</h2>
+      <p class="section-intro">
+        Claude Code hooks automate memory operations at key points in the session lifecycle.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Hook</th>
+            <th>Trigger</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SessionStart</td>
+            <td>Session begins or resumes</td>
+            <td>Injects summary of MEMORY.md, USER.md, and SOUL.md into context</td>
+          </tr>
+          <tr>
+            <td>SubagentStart</td>
+            <td>Subagent spawned via Task tool</td>
+            <td>Triggers for logging/monitoring (context injection not yet supported by Claude Code)</td>
+          </tr>
+          <tr>
+            <td>PreCompact</td>
+            <td>Before context compaction</td>
+            <td>Prompts Claude to save important information before context is reduced</td>
+          </tr>
+          <tr>
+            <td>SessionEnd</td>
+            <td>Session terminates</td>
+            <td>Re-indexes all memory files to make new content searchable</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Hook Output Format</h3>
+      <p>Hooks communicate with Claude Code via JSON on stdout:</p>
+      <pre><code>// SessionStart hook output
+{
+  "additionalContext": "## Memory Context\n\n**USER.md:**\nName: Alex Chen\nPrefers: Functional programming, Neovim, Vitest..."
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- Claude Code Adaptation -->
+  <section>
+    <div class="container">
+      <h2>Claude Code Adaptation</h2>
+      <p class="section-intro">
+        This implementation adapts the original Clawdbot design for Claude Code's specific behavior around context management and auto-compaction.
+      </p>
+
+      <div class="two-col">
+        <div>
+          <h3>The Challenge</h3>
+          <p>The original Clawdbot design puts instructions in <code class="inline-code">AGENTS.md</code>:</p>
+          <div class="highlight-box">
+            <p><em>"Before doing anything else:</em></p>
+            <p><em>1. Read SOUL.md - this is who you are</em></p>
+            <p><em>2. Read USER.md - this is who you are helping</em></p>
+            <p><em>3. Read memory/YYYY-MM-DD.md for recent context"</em></p>
+          </div>
+          <p>But this creates a <strong>bootstrapping problem</strong> in Claude Code: after auto-compact, how does Claude know to read these files if nobody told it?</p>
+        </div>
+
+        <div>
+          <h3>Our Solution</h3>
+          <p>Claude Code <strong>only auto-injects CLAUDE.md</strong> after compaction. So we use a layered approach:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CLAUDE.md</td>
+                <td>Directive instructions ("Use memory_search before tasks") - always injected</td>
+              </tr>
+              <tr>
+                <td>SessionStart hook</td>
+                <td>Injects summaries of MEMORY.md, USER.md, SOUL.md</td>
+              </tr>
+              <tr>
+                <td>MCP tools</td>
+                <td>For deeper search when summaries aren't enough</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3>Subagents & Memory Access</h3>
+      <p>When Claude spawns subagents via the Task tool, they have full memory access via MCP tools:</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🔗</div>
+          <h4>Full MCP Access</h4>
+          <p>Subagents inherit access to <code class="inline-code">memory_search</code>, <code class="inline-code">memory_get</code>, and <code class="inline-code">memory_list</code> tools.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <h4>AGENTS.md Role</h4>
+          <p>Contains detailed behavior patterns that subagents can read via <code class="inline-code">memory_get</code> when they need guidance.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">💡</div>
+          <h4>Active Search Required</h4>
+          <p>Subagents must explicitly call <code class="inline-code">memory_search</code> to retrieve context (no auto-injection yet).</p>
+        </div>
+      </div>
+
+      <div class="highlight-box" style="margin-top: 24px; background: rgba(245, 158, 11, 0.1); border-color: #f59e0b;">
+        <h4 style="color: #f59e0b;">Note: SubagentStart Limitation</h4>
+        <p style="margin-bottom: 0;">
+          Claude Code's <code class="inline-code">SubagentStart</code> hook fires when subagents spawn, but doesn't yet support <code class="inline-code">additionalContext</code> injection
+          (only <code class="inline-code">SessionStart</code>, <code class="inline-code">PreToolUse</code>, <code class="inline-code">PostToolUse</code>, <code class="inline-code">UserPromptSubmit</code>, and <code class="inline-code">Setup</code> support this).
+          Subagents should use MCP tools directly to access memory.
+        </p>
+      </div>
+
+      <div class="highlight-box" style="margin-top: 32px;">
+        <h4>Key Insight</h4>
+        <p style="margin-bottom: 0;">
+          <strong>CLAUDE.md</strong> is for <em>instructions</em> (tells Claude what to do).<br>
+          <strong>AGENTS.md</strong> is for <em>detailed patterns</em> (read on-demand for complex tasks).<br>
+          <strong>SessionStart Hook</strong> provides <em>automatic context injection</em> for main sessions.<br>
+          <strong>MCP Tools</strong> provide <em>explicit memory access</em> for both main sessions and subagents.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Database -->
+  <section>
+    <div class="container">
+      <h2>Database Schema</h2>
+      <p class="section-intro">
+        SQLite stores chunks of memory files along with their embeddings for efficient search.
+      </p>
+
+      <div class="two-col">
+        <div>
+          <h4>Tables</h4>
+          <pre><code>-- Main chunks table
+CREATE TABLE chunks (
+  id INTEGER PRIMARY KEY,
+  path TEXT NOT NULL,
+  start_line INTEGER NOT NULL,
+  end_line INTEGER NOT NULL,
+  text TEXT NOT NULL,
+  hash TEXT NOT NULL UNIQUE
+);
+
+-- FTS5 for keyword search
+CREATE VIRTUAL TABLE chunks_fts
+  USING fts5(text, content='chunks');
+
+-- Vector table for semantic search
+CREATE VIRTUAL TABLE chunks_vec
+  USING vec0(embedding float[768]);
+
+-- Mapping table for vector lookups
+CREATE TABLE chunks_vec_map (
+  vec_rowid INTEGER PRIMARY KEY,
+  chunk_id INTEGER NOT NULL
+);</code></pre>
+        </div>
+
+        <div>
+          <h4>Chunking Strategy</h4>
+          <div class="highlight-box">
+            <p><strong>Target:</strong> 400 tokens per chunk</p>
+            <p><strong>Overlap:</strong> 80 tokens between chunks</p>
+            <p><strong>Boundaries:</strong> Respects markdown headers and paragraphs</p>
+            <p style="margin-bottom: 0;"><strong>Tracking:</strong> Each chunk stores line numbers for precise retrieval</p>
+          </div>
+
+          <h4>Indexing</h4>
+          <p>Run manually or automatically via hooks:</p>
+          <pre><code># Index changed files
+npm run index
+
+# Force re-index all files
+npm run index -- -f</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup -->
+  <section>
+    <div class="container">
+      <h2>Setup</h2>
+      <p class="section-intro">
+        Get the memory system running in your Claude Code environment.
+      </p>
+
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="flow-number">1</div>
+          <div class="flow-content">
+            <h5>Install Dependencies</h5>
+            <pre><code>npm install</code></pre>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">2</div>
+          <div class="flow-content">
+            <h5>Install Ollama & Model</h5>
+            <pre><code># Install Ollama from https://ollama.ai
+ollama pull nomic-embed-text</code></pre>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">3</div>
+          <div class="flow-content">
+            <h5>Index Memory Files</h5>
+            <pre><code>npm run index</code></pre>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-number">4</div>
+          <div class="flow-content">
+            <h5>Start Claude Code</h5>
+            <pre><code>claude
+# Accept the MCP server when prompted</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h3>Configuration Files</h3>
+      <div class="two-col">
+        <div>
+          <h4>.mcp.json</h4>
+          <p>MCP server configuration (project root):</p>
+          <pre><code>{
+  "mcpServers": {
+    "clawdbot-memory": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "src/mcp-server/index.ts"],
+      "env": {
+        "PROJECT_ROOT": "/path/to/project",
+        "DB_PATH": "/path/to/mydatabase.db"
+      }
+    }
+  }
+}</code></pre>
+        </div>
+        <div>
+          <h4>.claude/settings.local.json</h4>
+          <p>Hooks configuration:</p>
+          <pre><code>{
+  "hooks": {
+    "SessionStart": [{
+      "hooks": [{
+        "type": "command",
+        "command": "npx tsx .claude/hooks/session-start.ts"
+      }]
+    }],
+    "SubagentStart": [{
+      "hooks": [{
+        "type": "command",
+        "command": "npx tsx .claude/hooks/subagent-start.ts"
+      }]
+    }],
+    "PreCompact": [{
+      "matcher": "auto",
+      "hooks": [{
+        "type": "command",
+        "command": "npx tsx .claude/hooks/pre-compact.ts"
+      }]
+    }],
+    "SessionEnd": [{
+      "hooks": [{
+        "type": "command",
+        "command": "npx tsx .claude/hooks/session-end.ts"
+      }]
+    }]
+  }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section>
+    <div class="container">
+      <h2>Tech Stack</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h4>TypeScript</h4>
+          <p>Type-safe code with ES modules</p>
+        </div>
+        <div class="card">
+          <h4>SQLite + sqlite-vec</h4>
+          <p>Embedded database with vector search</p>
+        </div>
+        <div class="card">
+          <h4>Ollama</h4>
+          <p>Local embeddings with nomic-embed-text</p>
+        </div>
+        <div class="card">
+          <h4>MCP SDK</h4>
+          <p>Model Context Protocol for tool integration</p>
+        </div>
+        <div class="card">
+          <h4>better-sqlite3</h4>
+          <p>Synchronous SQLite bindings for Node.js</p>
+        </div>
+        <div class="card">
+          <h4>tiktoken</h4>
+          <p>Token counting for chunk sizing</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      Clawdbot Memory System &middot;
+      Inspired by <a href="https://manthanguptaa.in/posts/clawdbot_memory/" target="_blank">manthanguptaa's clawdbot_memory</a>
+    </p>
+  </footer>
+
+</body>
+</html>

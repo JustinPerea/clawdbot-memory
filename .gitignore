@@ -33,5 +33,4 @@ memory/*.md
 
 # Unrelated project files
 animation/
-docs/
 package-lock.json

@@ -2,6 +2,8 @@
 
 A persistent memory system for Claude Code that gives Claude long-term memory across sessions.
 
+**[View Full Documentation & Architecture Diagram](./docs/index.html)**
+
 ## Features
 
 - **Semantic search** - Find relevant memories using natural language queries
