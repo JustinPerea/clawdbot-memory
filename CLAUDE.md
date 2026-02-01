@@ -7,10 +7,15 @@ This project has persistent memory. **Use it.**
 2. Check if USER.md has preferences that apply
 3. Look for past decisions in MEMORY.md
 
-## After Completing Work
-1. Save important decisions to `MEMORY.md`
-2. Save learned user preferences to `USER.md`
-3. For session-specific notes, use `memory/YYYY-MM-DD.md`
+## Save to Memory IMMEDIATELY When:
+- User makes a decision → Save to `MEMORY.md` NOW
+- User states a preference → Save to `USER.md` NOW
+- Direction changes or pivots → Save to `MEMORY.md` NOW
+- You learn something about the user → Save to `USER.md` NOW
+
+**Don't wait until "work is complete" - save decisions as they happen.**
+
+After completing a task, also add session notes to `memory/YYYY-MM-DD.md`.
 
 ## MCP Tools Available
 
@@ -46,18 +51,25 @@ Check USER.md for current preferences, but known facts:
 - See `memory_search` for the latest user preferences
 - Always respect preferences for: editor, testing framework, code style
 
-## When to Save to Memory
+## What to Save (and Where)
 
-**Save to MEMORY.md:**
-- Technical decisions and rationale
-- Project architecture choices
-- Important facts that should persist
+**MEMORY.md (save immediately when these happen):**
+- "Let's go with X instead of Y" → Save the decision and why
+- "We're switching to..." → Save the change of direction
+- Architecture or tech stack choices
+- Important facts about the project
 
-**Save to USER.md:**
-- New preferences you learn ("I prefer X over Y")
-- Working style observations
-- Tool/framework preferences
+**USER.md (save immediately when you notice):**
+- "I prefer X" → Save it NOW
+- "I don't like Y" → Save it NOW
+- "I always use Z" → Save it NOW
+- Any workflow or style preference
+
+**memory/YYYY-MM-DD.md (daily log):**
+- Session summaries
+- Work in progress notes
+- Temporary debugging info
 
 **Don't save:**
-- Trivial implementation details
-- Temporary debugging info (use daily logs instead)
+- Trivial implementation details that are obvious from code
+- Things already documented elsewhere
