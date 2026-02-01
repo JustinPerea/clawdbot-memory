@@ -60,7 +60,7 @@ async function main() {
     console.log('=== Test: memory_search ===');
     try {
       const searchResult = await memorySearch(
-        { query: 'user preferences', maxResults: 5 },
+        { query: 'user preferences', maxResults: 5, minScore: 0.35 },
         queries,
         embedder
       );
