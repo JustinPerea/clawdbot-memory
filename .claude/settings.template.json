@@ -1,0 +1,63 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__clawdbot-memory__memory_search",
+      "mcp__clawdbot-memory__memory_get",
+      "mcp__clawdbot-memory__memory_list"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": ["clawdbot-memory"],
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/hooks/session-start.ts"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/hooks/subagent-start.ts"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/hooks/pre-compact.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/hooks/pre-compact.ts"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsx .claude/hooks/session-end.ts"
+          }
+        ]
+      }
+    ]
+  }
+}

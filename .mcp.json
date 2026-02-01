@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "clawdbot-memory": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "src/mcp-server/index.ts"]
+    }
+  }
+}
